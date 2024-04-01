@@ -4,26 +4,27 @@
     <meta charset="UTF-8" />
     <title>PDF Uploader</title>
     <style>
-      /* Simple styling; you can customize it as you like */
-      body {
-        font-family: Arial, sans-serif;
-        padding: 10px;
-      }
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
-      .button {
+      /* Existing styling */
+      /* ... */
+
+      /* Style for the drag-drop area */
+      #dragDropArea {
+        border: 2px dashed #cccccc;
+        border-radius: 5px;
+        text-align: center;
+        padding: 20px;
         margin-top: 10px;
       }
-      #resultContainer {
-        margin-top: 10px;
+      #dragDropArea.hover {
+        background-color: #e8f4ff;
       }
     </style>
   </head>
   <body>
     <label for="pdfUploader">Upload PDF:</label>
-    <input type="file" id="pdfUploader" accept="application/pdf" />
+    <div id="dragDropArea">
+      Drag and drop your PDF here or click to select a file
+    </div>
 
     <label for="jobDescription">Job Description:</label>
     <textarea id="jobDescription" rows="4" cols="50"></textarea>

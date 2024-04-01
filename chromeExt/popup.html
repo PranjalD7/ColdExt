@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PDF Uploader</title>
+    <style>
+      /* Simple styling; you can customize it as you like */
+      body {
+        font-family: Arial, sans-serif;
+        padding: 10px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      .button {
+        margin-top: 10px;
+      }
+      #resultContainer {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="pdfUploader">Upload PDF:</label>
+    <input type="file" id="pdfUploader" accept="application/pdf" />
+
+    <label for="jobDescription">Job Description:</label>
+    <textarea id="jobDescription" rows="4" cols="50"></textarea>
+
+    <button id="submit" class="button">Generate Email Draft</button>
+
+    <div id="resultContainer"></div>
+
+    <script src="scripts/popup.js"></script>
+  </body>
+</html>

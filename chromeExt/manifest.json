@@ -4,6 +4,7 @@
   "version": "1.0",
   "description": "Generates emails based on job descriptions and resumes",
   "permissions": ["storage", "activeTab", "tabs", "offscreen"],
+
   "action": {
     "default_popup": "popup.html"
   },

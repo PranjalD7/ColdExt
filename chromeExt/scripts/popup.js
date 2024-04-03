@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var reader = new FileReader();
 
       reader.onload = function (e) {
-        window.selectedPDF = e.target.result; // Save it to a global variable (or better, to your application's state)
+        window.selectedPDF = e.target.result; 
         chrome.runtime.sendMessage({
           action: "processPDF",
           pdfDataUrl: window.selectedPDF,

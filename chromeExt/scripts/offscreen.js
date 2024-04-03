@@ -1,4 +1,4 @@
 // offscreen.js
 setInterval(async () => {
-  (await navigator.serviceWorker.ready).active.postMessage("keepAlive");
-}, 20e3);
+    (await navigator.serviceWorker.ready).active.postMessage("keepAlive");
+  }, 20e3);

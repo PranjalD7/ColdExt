@@ -8,8 +8,11 @@ function dataURLtoBlob(dataURL) {
   }
   return new Blob([ab], { type: mimeString });
 }
+chrome.runtime.onStartup.addListener( () => {
+  console.log(`onStartup()`);
+});
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message) {
   if (message.action === "processPDF") {
     var blob = dataURLtoBlob(message.pdfDataUrl); // Convert Data URL to a Blob
     var formData = new FormData();
@@ -34,38 +37,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
           console.log(`New tab launched with id: ${tab.id}`);
         });
 
-        if (sender.tab) {
-          console.log("Inside sender.tab check"); // Verify if this block is entered
-
-          // Attempt to send the message
-          try {
-            chrome.tabs.sendMessage(sender.tab.id, {
-              action: "processComplete",
-              emailLink: emailLink,
-              tabId: sender.tab.id,
-            });
-            console.log("Message sent to tab ID: ", sender.tab.id); // Did the sendMessage call execute?
-          } catch (err) {
-            console.error("Error when sending message to tab: ", err); // Catch sendMessage errors
-          }
-
-          console.log("Before setting local storage"); // Verify execution before storage
-
-          let storageItem = {};
-          storageItem[`emailLink_${sender.tab.id}`] = emailLink;
-          // Attempt to set the local storage item
-          try {
-            chrome.storage.local.set(storageItem, () => {
-              console.log("Local storage set for tab ID: ", sender.tab.id); // Verify successful storage set
-            });
-          } catch (err) {
-            console.error("Error when setting local storage: ", err); // Catch storage errors
-          }
-
-          console.log("bhej dis"); // Check if this finally logs
-        } else {
-          console.log("Sender.tab is not defined");
-        }
+      
       })
       .catch((error) => {
         console.error("Error in fetch or subsequent processing:", error);

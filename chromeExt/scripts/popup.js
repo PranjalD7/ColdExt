@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   var dragDropArea = document.getElementById("dragDropArea");
   var jobDescriptionField = document.getElementById("jobDescription");
-  var resultContainer = document.getElementById("resultContainer");
-  var submitButton = document.getElementById("submit");
+
 
   // Styling changes when dragging files over the drop area
   dragDropArea.addEventListener("dragover", function (event) {
@@ -43,21 +42,9 @@ document.addEventListener("DOMContentLoaded", function () {
     hiddenInput.click();
   });
 
-  submitButton.addEventListener("click", function (event) {
-    event.preventDefault();
-    // Assume processFile sets a global variable or state
-    // representing the selected file (e.g., window.selectedPDF)
-    if (window.selectedPDF && jobDescriptionField.value) {
-      uploadPDF(window.selectedPDF, jobDescriptionField.value);
-    } else {
-      console.log(
-        "No PDF file has been selected or job description is missing."
-      );
-    }
-  });
-
   function processFile(file) {
     if (file && file.type === "application/pdf") {
+      dragDropArea.style.backgroundColor = '#ccffcc'; 
       var reader = new FileReader();
 
       reader.onload = function (e) {
@@ -79,27 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function uploadPDF(dataUrl, jobDescription) {
-    chrome.runtime.sendMessage({
-      action: "processPDF",
-      pdfDataUrl: dataUrl,
-      jobDescription: jobDescription,
-    });
-  }
+  
 
-  chrome.runtime.onMessage.addListener(function (message) {
-    console.log("popup listener working");
-    if (
-      message.action === "processComplete" &&
-      message.tabId === chrome.tabs.TAB_ID_NONE
-    ) {
-      console.log("done hai");
-      resultContainer.innerHTML = "";
-      const link = document.createElement("a");
-      link.href = message.emailLink;
-      link.textContent = "Open Email Draft";
-      link.target = "_blank";
-      resultContainer.appendChild(link);
-    }
-  });
+
 });

@@ -3,12 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dslipak/pdf"
+	"github.com/gin-gonic/gin"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
 )
@@ -23,7 +24,7 @@ func readPdf(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(b)
 	if err != nil {
@@ -33,59 +34,59 @@ func readPdf(data []byte) (string, error) {
 }
 
 func generateEmail(c *gin.Context) {
-    log.Println("Received a request to generate email")
+	log.Println("Received a request to generate email")
 
 	file, _, err := c.Request.FormFile("pdf")
-    if err != nil {
-        log.Printf("Error retrieving the PDF file from the form: %v", err)
+	if err != nil {
+		log.Printf("Error retrieving the PDF file from the form: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-    jobDescription := c.PostForm("jobDescription")
+	jobDescription := c.PostForm("jobDescription")
 
 	defer file.Close()
 
-    log.Println("Reading PDF file data")
+	log.Println("Reading PDF file data")
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-        log.Printf("Error reading the file data: %v", err)
+		log.Printf("Error reading the file data: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-    log.Println("Converting PDF to plain text")
-	content, err := readPdf(data) 
+	log.Println("Converting PDF to plain text")
+	content, err := readPdf(data)
 	if err != nil {
-        log.Printf("Error converting PDF to plain text: %v", err)
+		log.Printf("Error converting PDF to plain text: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-    log.Println("Initializing Ollama LLM")
+	log.Println("Initializing Ollama LLM")
 	llm, err := ollama.New(ollama.WithModel("llama2"))
 	if err != nil {
-        log.Printf("Error initializing Ollama: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	
-	ctx := context.Background()
-	prompt := fmt.Sprintf(
-        "Create a very brief cold email highlighting my skills to the recruiter using the following resume: %s, to apply for the following job description (do not write about my years of experience, only write about technologies I have worked with and my internships): %s",
-        content,
-        jobDescription,
-    )
-    
-    log.Println("Sending prompt to LLM")
-	completion, err := llm.Call(ctx, prompt, llms.WithTemperature(0.8))
-	if err != nil {
-        log.Printf("Error while LLM processing the prompt: %v", err)
+		log.Printf("Error initializing Ollama: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-    log.Println("LLM response received, returning email content")
+	ctx := context.Background()
+	prompt := fmt.Sprintf(
+		"Create a very brief cold email highlighting my skills to the recruiter using the following resume: %s, to apply for the following job description (do not write about my years of experience, only write about technologies I have worked with and my internships): %s",
+		content,
+		jobDescription,
+	)
+
+	log.Println("Sending prompt to LLM")
+	completion, err := llm.Call(ctx, prompt, llms.WithTemperature(0.8))
+	if err != nil {
+		log.Printf("Error while LLM processing the prompt: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	log.Println("LLM response received, returning email content")
 	c.JSON(http.StatusOK, gin.H{"email": completion})
 }
 
